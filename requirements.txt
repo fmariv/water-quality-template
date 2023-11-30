@@ -1,0 +1,17 @@
+python-dotenv
+spai
+rasterio
+sentinelhub
+geopandas
+overpy
+geojson
+Pillow
+mercantile
+cachetools
+matplotlib
+shapely
+streamlit
+pandas
+pydeck
+fastapi
+uvicorn
