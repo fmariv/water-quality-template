@@ -16,11 +16,30 @@ base_url = "http://localhost"  # TODO control this with env vars
 analytics_url = f'{base_url}:{project.api_port("analytics")}'
 xyz_url = f'{base_url}:{project.api_port("xyz")}'
 
+analytics_tables = {
+    "Water extent": "table_water_extent",
+    "DOC": "table_doc_Ha",
+    "Turbidity": "table_turbidity_Ha",
+    "Chlorophyll": "table_chlorophyll_Ha",
+}
+
+analytics_tiffs = {
+    "Water extent": "median_water_mask",
+    "DOC": "DOC_masked",
+    "Turbidity": "ndti_masked",
+    "Chlorophyll": "ndci_masked",
+}
+
 
 @st.cache_data(ttl=10)
-def get_data():
+def get_data(analytics_file: str):
     """
     Get vegetation analytics data
+
+    Parameters
+    ----------
+    analytics_file : str
+        Name of analytics file
 
     Returns
     -------
@@ -28,7 +47,7 @@ def get_data():
         Dataframe with vegetation analytics data
     """
     api_url = analytics_url
-    analytics = requests.get(api_url, timeout=10).json()
+    analytics = requests.get(f"{api_url}/{analytics_file}", timeout=10).json()
     analytics_df = pd.DataFrame(analytics)
     analytics_df.sort_index(inplace=True)
     return analytics_df
@@ -50,9 +69,8 @@ def get_aoi_centroid():
     return centroid
 
 
-st.set_page_config(page_title="Forest monitoring Pulse", page_icon="🌳")
+st.set_page_config(page_title="Water quality monitoring Pulse", page_icon="💧")
 
-df = get_data()
 centroid = get_aoi_centroid()
 
 # AWS Open Data Terrain Tiles
@@ -63,27 +81,38 @@ TERRAIN_IMAGE = (
 # Define how to parse elevation tiles
 ELEVATION_DECODER = {"rScaler": 256, "gScaler": 1, "bScaler": 1 / 256, "offset": -32768}
 
+base_df = get_data("table_water_extent")
+
 
 def choose_variables():
     with st.sidebar:
         st.sidebar.markdown("### Select date and indicator")
-        date = st.selectbox("Date", df.index)
-        variable = st.selectbox("Indicator", ["Vegetation", "Quality"])
-        variable = variable.lower()
-    return date, variable
+        date = st.selectbox("Date", base_df.index)
+        variable = st.selectbox(
+            "Indicator", ["Water extent", "DOC", "Turbidity", "Chlorophyll"]
+        )
+        analytics_file = analytics_tables[variable]
+        image_name = analytics_tiffs[variable]
+        df = get_data(analytics_file)
+    return df, image_name, date, variable
 
 
-date, variable = choose_variables()
+df, image_name, date, variable = choose_variables()
 
-if variable == "quality":
-    stretch = "0,3"
+if variable in ("Turbidity", "Chlorophyll"):
+    stretch = "-1,1"
+    palette = "plasma"
+elif variable == "DOC":
+    stretch = "0,100"
+    palette = "RdYlGn"
 else:
     stretch = "0,1"
+    palette = "Blues"
 
 
 selected_layer = pdk.Layer(
     "TerrainLayer",
-    texture=f"{xyz_url}/{variable}_masked_{date}.tif/{{z}}/{{x}}/{{y}}.png?palette=RdYlGn&stretch={stretch}",
+    texture=f"{xyz_url}/{image_name}_{date}.tif/{{z}}/{{x}}/{{y}}.png?palette={palette}&stretch={stretch}",
     elevation_decoder=ELEVATION_DECODER,
     elevation_data=TERRAIN_IMAGE,
 )
@@ -104,11 +133,11 @@ if selected_layer:
 else:
     st.error("Please choose at least one date and indicator.")
 
-st.title("Vegetation Analytics")
+st.title("Water quality Analytics")
 
-colors = ["#e41a1c", "#BFEAA2", "#E4EA20", "#245900"]
-
-df_chart = df.drop(columns=["Total"])  # Remove Total column to not plot it
-st.line_chart(df_chart, color=colors)  # TODO use altair
+for col in df.columns:
+    if "Total" in col:
+        df.drop(col, axis=1, inplace=True)
+st.line_chart(df)  # TODO use altair
 if st.checkbox("Show data"):
     st.write(df)

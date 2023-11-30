@@ -20,10 +20,15 @@ app.add_middleware(
 )
 
 
-@app.get("/")
-async def analytics():
+@app.get("/{analytics_file}")
+async def analytics(analytics_file: str):
     """
     Return vegetation analytics
+
+    Parameters
+    ----------
+    analytics_file : str
+        Name of analytics file
 
     Returns
     -------
@@ -37,7 +42,8 @@ async def analytics():
     """
     try:
         storage = Storage("data")
-        analytics = storage.read("AOI_Vegetation_Quality.json")
+        print(f"Reading {analytics_file}.json")
+        analytics = storage.read(f"{analytics_file}.json")
         if isinstance(analytics.index, pd.DatetimeIndex):
             analytics.index = analytics.index.strftime("%Y-%m-%d")
         analytics = analytics.to_dict()
