@@ -1,17 +1,27 @@
-Example forest monitoring
+# Water quality monitoring template
 
-1. Local workflow (load aoi, images -> compute -> save local)
-2. Hybrid workflow (load aoi, images from cloud -> compute local -> save cloud)
-3. Cloud workflow (load aoi, images from cloud -> compute cloud -> save cloud)
-    - use cli to send script to cloud
-    - provision infrastructure
-    - run script on cloud 
-    - delete infrastructure (if not persistent)
+SPAI template for water quality monitoring.
 
-If use want an api, create the api.py file with the endpoints. We manage the deployment
+## Installation
 
-Create agents in different files
-- download new images
-- retreive analytics and send email alerts / pdf reports / call other apis ...
+```sh
+pip install spai
+```
 
-Use config file to setup spai
+## Usage
+
+You can clone and run the template.
+
+```sh
+$ git clone git@github.com:fmariv/forest-monitoring-template.git
+$ cd forest-monitoring-template
+$ spai run
+```
+
+Or run it directly from the `CLI`.
+
+```sh
+$ spai run -t https://github.com/fmariv/forest-monitoring-template
+```
+
+As easy as that!
