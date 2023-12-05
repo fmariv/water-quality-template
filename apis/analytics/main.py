@@ -2,7 +2,6 @@
 Analytics API
 """
 import argparse
-import json
 
 import pandas as pd
 import uvicorn
@@ -23,7 +22,12 @@ app.add_middleware(
 @app.get("/{analytics_file}")
 async def analytics(analytics_file: str):
     """
-    Return vegetation analytics
+    Return water quality analytics
+
+    Parameters
+    ----------
+    analytics_file : str
+        Name of analytics file
 
     Parameters
     ----------
@@ -33,7 +37,7 @@ async def analytics(analytics_file: str):
     Returns
     -------
     analytics : dict
-        Dictionary with vegetation analytics
+        Dictionary with water quality analytics
 
     Raises
     ------

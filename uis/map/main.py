@@ -3,32 +3,26 @@ Streamlit app to display vegetation analytics
 """
 import os
 
+import folium
+from streamlit_folium import folium_static
 import geopandas as gpd
 import pandas as pd
-import pydeck as pdk
 import requests
 import streamlit as st
+
 from spai.project import ProjectConfig
 
+from config import (
+    ANALYTICS_URL,
+    XYZ_URL,
+    WATER_COLS,
+    analytics_tables,
+    MARKDOWN_DICT,
+    COLORS_DICT,
+)
+
+
 project = ProjectConfig()
-
-base_url = "http://localhost"  # TODO control this with env vars
-analytics_url = f'{base_url}:{project.api_port("analytics")}'
-xyz_url = f'{base_url}:{project.api_port("xyz")}'
-
-analytics_tables = {
-    "Water extent": "table_water_extent",
-    "DOC": "table_doc_Ha",
-    "Turbidity": "table_turbidity_Ha",
-    "Chlorophyll": "table_chlorophyll_Ha",
-}
-
-analytics_tiffs = {
-    "Water extent": "median_water_mask",
-    "DOC": "DOC_masked",
-    "Turbidity": "ndti_masked",
-    "Chlorophyll": "ndci_masked",
-}
 
 
 @st.cache_data(ttl=10)
@@ -46,10 +40,12 @@ def get_data(analytics_file: str):
     df : pandas.DataFrame
         Dataframe with vegetation analytics data
     """
-    api_url = analytics_url
+    api_url = ANALYTICS_URL
     analytics = requests.get(f"{api_url}/{analytics_file}", timeout=10).json()
     analytics_df = pd.DataFrame(analytics)
     analytics_df.sort_index(inplace=True)
+    if isinstance(analytics_df.index, pd.DatetimeIndex):
+        analytics_df.index = analytics_df.index.strftime("%Y-%m-%d")
     return analytics_df
 
 
@@ -64,27 +60,25 @@ def get_aoi_centroid():
     """
     aoi = project.aoi
     gdf = gpd.GeoDataFrame.from_features(aoi)
-    centroid = gdf.geometry.centroid[0].x, gdf.geometry.centroid[0].y
+    centroid = gdf.geometry.centroid[0].y, gdf.geometry.centroid[0].x
 
     return centroid
 
 
-st.set_page_config(page_title="Water quality monitoring Pulse", page_icon="💧")
-
-centroid = get_aoi_centroid()
-
-# AWS Open Data Terrain Tiles
-TERRAIN_IMAGE = (
-    "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"
-)
-
-# Define how to parse elevation tiles
-ELEVATION_DECODER = {"rScaler": 256, "gScaler": 1, "bScaler": 1 / 256, "offset": -32768}
-
-base_df = get_data("table_water_extent")
-
-
 def choose_variables():
+    """
+    Choose date and indicator from the analytics tables and layers
+
+    Returns
+    -------
+    date : str
+        Date of the analytics
+    variable : str
+        Name of the analytics variable
+    df : pandas.DataFrame
+        Dataframe with the analytics data
+    """
+    base_df = get_data("table_water_extent")
     with st.sidebar:
         st.sidebar.markdown("### Select date and indicator")
         date = st.selectbox("Date", base_df.index)
@@ -92,52 +86,46 @@ def choose_variables():
             "Indicator", ["Water extent", "DOC", "Turbidity", "Chlorophyll"]
         )
         analytics_file = analytics_tables[variable]
-        image_name = analytics_tiffs[variable]
         df = get_data(analytics_file)
-    return df, image_name, date, variable
+        # Drop unused columns from Water extent table
+        if variable == "Water extent":
+            df = df[WATER_COLS]
+    return date, variable, df
 
 
-df, image_name, date, variable = choose_variables()
+st.set_page_config(page_title="Water quality monitoring Pulse", page_icon="💧")
 
-if variable in ("Turbidity", "Chlorophyll"):
-    stretch = "-1,1"
-    palette = "plasma"
-elif variable == "DOC":
-    stretch = "0,100"
-    palette = "RdYlGn"
-else:
-    stretch = "0,1"
-    palette = "Blues"
+centroid = get_aoi_centroid()
 
+date, variable, dataframe = choose_variables()
 
-selected_layer = pdk.Layer(
-    "TerrainLayer",
-    texture=f"{xyz_url}/{image_name}_{date}.tif/{{z}}/{{x}}/{{y}}.png?palette={palette}&stretch={stretch}",
-    elevation_decoder=ELEVATION_DECODER,
-    elevation_data=TERRAIN_IMAGE,
+variables_url_dict = {
+    "Water extent": f"{XYZ_URL}/median_water_mask_{date}.tif/{{z}}/{{x}}/{{y}}.png?palette=Blues&stretch=0,1",
+    "DOC": f"{XYZ_URL}/DOC_masked_{date}.tif/{{z}}/{{x}}/{{y}}.png?palette=RdYlGn&stretch=0,50",
+    "Turbidity": f"{XYZ_URL}/ndti_masked_{date}.tif/{{z}}/{{x}}/{{y}}.png?palette=plasma&stretch=-1,1",
+    "Chlorophyll": f"{XYZ_URL}/ndci_masked_{date}.tif/{{z}}/{{x}}/{{y}}.png?palette=plasma&stretch=-1,1",
+}
+
+# Create map with Folium
+m = folium.Map(
+    location=centroid,
+    zoom_start=12,
+    tiles="CartoDB Positron",
 )
-
-
-view_state = pdk.ViewState(
-    latitude=centroid[1], longitude=centroid[0], zoom=9, pitch=60
+# Add the analytic layer to the map
+raster = folium.raster_layers.TileLayer(
+    tiles=variables_url_dict[variable],
+    attr="Water Quality Pulse",
+    name="Water",
+    overlay=True,
+    control=True,
+    show=True,
 )
-
-if selected_layer:
-    st.pydeck_chart(
-        pdk.Deck(
-            map_style="mapbox://styles/mapbox/light-v9",
-            initial_view_state=view_state,
-            layers=selected_layer,
-        )
-    )
-else:
-    st.error("Please choose at least one date and indicator.")
+raster.add_to(m)
+folium_static(m)
 
 st.title("Water quality Analytics")
-
-for col in df.columns:
-    if "Total" in col:
-        df.drop(col, axis=1, inplace=True)
-st.line_chart(df)  # TODO use altair
+st.markdown(MARKDOWN_DICT[variable])
+st.line_chart(dataframe, color=COLORS_DICT[variable])
 if st.checkbox("Show data"):
-    st.write(df)
+    st.write(dataframe)

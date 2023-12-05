@@ -1,0 +1,7 @@
+python-dotenv
+spai
+rasterio
+sentinelhub
+geopandas
+overpy
+geojson

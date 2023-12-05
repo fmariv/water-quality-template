@@ -1,0 +1,10 @@
+spai
+pandas
+geopandas
+rasterio
+numpy
+minio
+python-dotenv
+matplotlib
+fastapi
+uvicorn

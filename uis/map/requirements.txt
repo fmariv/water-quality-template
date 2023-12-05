@@ -1,0 +1,7 @@
+spai
+streamlit
+pandas
+geopandas
+folium
+streamlit_folium
+requests
