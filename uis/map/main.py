@@ -101,9 +101,9 @@ date, variable, dataframe = choose_variables()
 
 variables_url_dict = {
     "Water extent": f"{XYZ_URL}/median_water_mask_{date}.tif/{{z}}/{{x}}/{{y}}.png?palette=Blues&stretch=0,1",
-    "DOC": f"{XYZ_URL}/DOC_masked_{date}.tif/{{z}}/{{x}}/{{y}}.png?palette=RdYlGn&stretch=0,50",
-    "Turbidity": f"{XYZ_URL}/ndti_masked_{date}.tif/{{z}}/{{x}}/{{y}}.png?palette=plasma&stretch=-1,1",
-    "Chlorophyll": f"{XYZ_URL}/ndci_masked_{date}.tif/{{z}}/{{x}}/{{y}}.png?palette=plasma&stretch=-1,1",
+    "DOC": f"{XYZ_URL}/DOC_masked_{date}.tif/{{z}}/{{x}}/{{y}}.png?palette=RdYlGn_r&stretch=0,50",
+    "Turbidity": f"{XYZ_URL}/ndti_masked_{date}.tif/{{z}}/{{x}}/{{y}}.png?palette=RdYlGn&stretch=-1,1",
+    "Chlorophyll": f"{XYZ_URL}/ndci_masked_{date}.tif/{{z}}/{{x}}/{{y}}.png?palette=RdYlGn&stretch=-1,1",
 }
 
 # Create map with Folium
