@@ -28,7 +28,7 @@ project = ProjectConfig()
 @st.cache_data(ttl=10)
 def get_data(analytics_file: str):
     """
-    Get vegetation analytics data
+    Get water quality analytics data
 
     Parameters
     ----------
@@ -38,7 +38,7 @@ def get_data(analytics_file: str):
     Returns
     -------
     df : pandas.DataFrame
-        Dataframe with vegetation analytics data
+        Dataframe with water quality analytics data
     """
     api_url = ANALYTICS_URL
     analytics = requests.get(f"{api_url}/{analytics_file}", timeout=10).json()
