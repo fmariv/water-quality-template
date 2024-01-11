@@ -1,7 +1,7 @@
 """
 UI constants
 """
-from spai.project import ProjectConfig
+from spai.models import ProjectConfig
 
 project = ProjectConfig()
 
