@@ -3,11 +3,11 @@ Analytics API
 """
 import argparse
 
-import pandas as pd
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from spai.storage import Storage
+from spai.utils.time import format_df_time_index
 
 app = FastAPI(title="analytics")
 app.add_middleware(
@@ -48,8 +48,8 @@ async def analytics(analytics_file: str):
         storage = Storage("data")
         print(f"Reading {analytics_file}.json")
         analytics = storage.read(f"{analytics_file}.json")
-        if isinstance(analytics.index, pd.DatetimeIndex):
-            analytics.index = analytics.index.strftime("%Y-%m-%d")
+        # Format date to ensure it is in the correct format
+        analytics = format_df_time_index(analytics)
         analytics = analytics.to_dict()
         return analytics
     except Exception as e:

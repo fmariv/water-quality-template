@@ -44,8 +44,6 @@ def get_data(analytics_file: str):
     analytics = requests.get(f"{api_url}/{analytics_file}", timeout=10).json()
     analytics_df = pd.DataFrame(analytics)
     analytics_df.sort_index(inplace=True)
-    if isinstance(analytics_df.index, pd.DatetimeIndex):
-        analytics_df.index = analytics_df.index.strftime("%Y-%m-%d")
     return analytics_df
 
 
@@ -79,6 +77,7 @@ def choose_variables():
         Dataframe with the analytics data
     """
     base_df = get_data("table_water_extent")
+    print(base_df)
     with st.sidebar:
         st.sidebar.markdown("### Select date and indicator")
         date = st.selectbox("Date", base_df.index)
