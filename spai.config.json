@@ -1,60 +1,72 @@
 {
-    "name": "Water quality monitoring",
+    "project": "Water quality monitoring",
     "description": "Template for water quality monitoring in a given area of interest",
     "thumbnail": "https://images.unsplash.com/photo-1557456170-0cf4f4d0d362?q=80&w=2787&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    "services": {
-        "scripts": {
-            "downloader": {
-                "name": "downloader",
-                "storage": "data",
-                "run_on_start": true,
-                "run_every": 5,
-                "env": [
-                    "SH_CLIENT_ID",
-                    "SH_CLIENT_SECRET"
-                ]
-            },
-            "water-quality": {
-                "name": "water-quality",
-                "storage": "data",
-                "run_every": 5
-            }
+    "scripts": [
+        {
+            "name": "downloader",
+            "storage": "data",
+            "run_on_start": true,
+            "run_every": 5,
+            "env": [
+                "SH_CLIENT_ID",
+                "SH_CLIENT_SECRET"
+            ]
         },
-        "apis": {
-            "analytics": {
-                "name": "analytics",
-                "storage": "data",
-                "port": 8000
-            },
-            "xyz": {
-                "name": "xyz",
-                "storage": "data",
-                "port": 8080
-            }
+        {
+            "name": "water-quality",
+            "storage": "data",
+            "run_every": 5
+        }
+    ],
+    "apis": [
+        {
+            "name": "analytics",
+            "storage": "data",
+            "port": 8000
         },
-        "uis": {
-            "map": {
-                "name": "map",
-                "port": 5000,
-                "command": "streamlit run uis/map/main.py --server.address localhost",
-                "apis": {
-                    "ANALYTICS_URL": "analytics",
-                    "XYZ_URL": "xyz"
-                }
+        {
+            "name": "xyz",
+            "storage": "data",
+            "port": 8080
+        }
+    ],
+    "uis": [
+        {
+            "name": "map",
+            "port": 5000,
+            "command": "streamlit run uis/map/main.py --server.address localhost",
+            "env": {
+                "ANALYTICS_URL": "api.analytics",
+                "XYZ_URL": "api.xyz"
             }
         }
-    },
+    ],
     "variables": {
         "AOI": {
             "type": "GeoJSON",
             "UI": [
                 "DRAW_GEOJSON_MAP",
                 "UPLOAD_GEOJSON"
-            ]
+            ],
+            "value": {
+                "type": "Feature",
+                "properties": {},
+                "geometry": {
+                  "type": "Polygon",
+                  "coordinates": [
+                    [[0.870401, 42.043287], [0.91277, 42.043287], [0.91277, 42.101951], [0.870401, 42.101951], [0.870401, 42.043287]]
+                  ]
+                }
+              }
         },
         "DATES": {
             "type": "DateRange",
-            "UI": "DATE_RANGE"
+            "UI": "DATE_RANGE",
+            "value": [
+                "2020-01-01",
+                "2020-01-10"
+            ]
         },
         "SH_CLIENT_ID": {
             "type": "string",

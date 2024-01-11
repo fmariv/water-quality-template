@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import geopandas as gpd
 from dotenv import load_dotenv
 from spai.data.satellite import download_satellite_image, explore_satellite_images
-from spai.project import ProjectConfig
+from spai.models import ProjectConfig
 from spai.storage import Storage
 
 load_dotenv()

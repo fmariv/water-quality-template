@@ -1,7 +1,7 @@
 """
 Script to run the water quality monitoring pipeline
 """
-from spai.project import ProjectConfig
+from spai.models import ProjectConfig
 from spai.pulses import water_quality
 from spai.storage import Storage
 from tqdm import tqdm
