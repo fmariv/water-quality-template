@@ -1,13 +1,14 @@
 """
 Analytics API
 """
+
 import argparse
 
 import uvicorn
+import pandas as pd
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from spai.storage import Storage
-from spai.utils.time import format_df_time_index
 
 app = FastAPI(title="analytics")
 app.add_middleware(
@@ -17,6 +18,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+storage = Storage()["data"]
 
 
 @app.get("/{analytics_file}")
@@ -45,11 +48,10 @@ async def analytics(analytics_file: str):
         If analytics file doesn't exist
     """
     try:
-        storage = Storage("data")
-        print(f"Reading {analytics_file}.json")
         analytics = storage.read(f"{analytics_file}.json")
         # Format date to ensure it is in the correct format
-        analytics = format_df_time_index(analytics)
+        if isinstance(analytics.index, pd.DatetimeIndex):
+            analytics.index = analytics.index.strftime("%Y-%m-%d")
         analytics = analytics.to_dict()
         return analytics
     except Exception as e:

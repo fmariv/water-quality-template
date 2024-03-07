@@ -1,25 +1,27 @@
 """
 Script to download satellite images 
 """
+
 from datetime import datetime, timedelta
 
 import geopandas as gpd
 from dotenv import load_dotenv
 from spai.data.satellite import download_satellite_image, explore_satellite_images
-from spai.models import ProjectConfig
 from spai.storage import Storage
+from spai.config import SPAIVars
 
 load_dotenv()
 
-storage = Storage("data")
-project = ProjectConfig()
+storage = Storage()["data"]
+vars = SPAIVars()
 
 
 if __name__ == "__main__":
     # explore available images
     print("Looking for images in the last month")
-    aoi = gpd.GeoDataFrame.from_features(project.aoi["features"])
-    dates = project.dates
+    # aoi = gpd.GeoDataFrame.from_features(project.aoi["features"])
+    aoi = vars["AOI"]
+    dates = vars["DATES"]
     images = explore_satellite_images(aoi, dates, cloud_cover=10)
 
     if len(images) == 0:

@@ -1,6 +1,7 @@
 """
 XYZ API
 """
+
 from typing import Optional
 import argparse
 
@@ -28,7 +29,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-storage = Storage("data")
+storage = Storage()["data"]
 
 
 @app.get("/")

@@ -1,6 +1,7 @@
 """
 Streamlit app to display vegetation analytics
 """
+
 import os
 
 import folium
@@ -9,8 +10,7 @@ import geopandas as gpd
 import pandas as pd
 import requests
 import streamlit as st
-
-from spai.models import ProjectConfig
+from spai.config import SPAIVars
 
 from config import (
     ANALYTICS_URL,
@@ -21,8 +21,7 @@ from config import (
     COLORS_DICT,
 )
 
-
-project = ProjectConfig()
+vars = SPAIVars()
 
 
 @st.cache_data(ttl=10)
@@ -56,7 +55,7 @@ def get_aoi_centroid():
     centroid : tuple
         AOI centroid
     """
-    aoi = project.aoi
+    aoi = vars["AOI"]
     gdf = gpd.GeoDataFrame.from_features(aoi)
     centroid = gdf.geometry.centroid[0].y, gdf.geometry.centroid[0].x
 

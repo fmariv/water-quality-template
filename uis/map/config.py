@@ -1,13 +1,14 @@
 """
 UI constants
 """
-from spai.models import ProjectConfig
 
-project = ProjectConfig()
+import os
+from spai.config import SPAIVars
 
-BASE_URL = "http://localhost"
-ANALYTICS_URL = f'{BASE_URL}:{project.api_port("analytics")}'
-XYZ_URL = f'{BASE_URL}:{project.api_port("xyz")}'
+vars = SPAIVars()
+
+ANALYTICS_URL = os.getenv("ANALYTICS_URL")
+XYZ_URL = os.getenv("XYZ_URL")
 
 WATER_COLS = ["Water [Has]", "Not Water [Has]", "Percentage [%]"]
 

@@ -1,0 +1,26 @@
+project: water-quality-template
+storage:
+  - name: data
+    type: local
+scripts:
+  - name: downloader
+    run_every: 1
+    run_on_start: True
+  - name: water-quality
+    run_every: 1
+    run_on_start: True
+apis:
+  - name: analytics
+    port: 8021
+    host: localhost
+  - name: xyz
+    port: 8022
+    host: localhost
+uis:
+  - name: map
+    # command: streamlit run main.py --server.address 0.0.0.0 --server.port 80
+    command: streamlit run main.py --server.address localhost
+    port: 8501
+    env: # use api names as url placeholders
+      ANALYTICS_URL: api.analytics
+      XYZ_URL: api.xyz

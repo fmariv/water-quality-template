@@ -9,6 +9,6 @@ matplotlib
 fastapi
 uvicorn
 Pillow
-mercantine
+mercantile
 cachetools
 shapely
