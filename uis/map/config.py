@@ -7,8 +7,8 @@ from spai.config import SPAIVars
 
 vars = SPAIVars()
 
-ANALYTICS_URL = os.getenv("ANALYTICS_URL")
-XYZ_URL = os.getenv("XYZ_URL")
+ANALYTICS_URL = f'http://{os.getenv("ANALYTICS_URL")}'
+XYZ_URL = f'http://{os.getenv("XYZ_URL")}'
 
 WATER_COLS = ["Water [Has]", "Not Water [Has]", "Percentage [%]"]
 
