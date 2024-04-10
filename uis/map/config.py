@@ -28,7 +28,7 @@ The water extent is calculated using the [NDWI](https://en.wikipedia.org/wiki/No
 DOC_MARKDOWN = """
 ### Dissolved organic carbon
 
-Dissolved Organic Carbon (DOC) in water refers to the fraction of total organic carbon that is dissolved in water.. The categories N0, N1, N2 and N3 indicate the difference between the DOC value in each pixel with respect to the average DOC of the body of water over time.
+Dissolved Organic Carbon (DOC) in water refers to the fraction of total organic carbon that is dissolved in water.. The categories indicate the difference between the DOC value in each pixel with respect to the average DOC of the body of water over time.
 """
 
 TURBIDITY_MARKDOWN = """
