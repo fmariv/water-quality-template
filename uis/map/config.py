@@ -14,7 +14,7 @@ WATER_COLS = ["Water [Has]", "Not Water [Has]", "Percentage [%]"]
 
 analytics_tables = {
     "Water extent": "table_water_extent",
-    "DOC": "table_doc_percent",
+    "DOC": "table_DOC_percent",
     "Turbidity": "table_turbidity_percent",
     "Chlorophyll": "table_chlorophyll_percent",
 }
@@ -52,7 +52,7 @@ MARKDOWN_DICT = {
 
 COLORS_DICT = {
     "Water extent": ["#D80707", "#01438E", "#00D4FF"],
-    "DOC": ["#01CA13", "#CDFF00", "#FF9300", "#FF0000"],
+    "DOC": ["#FF0000", "#CDFF00", "#01CA13"],
     "Turbidity": ["#FF0000", "#CDFF00", "#01CA13"],
     "Chlorophyll": ["#FF0000", "#CDFF00", "#01CA13"],
 }

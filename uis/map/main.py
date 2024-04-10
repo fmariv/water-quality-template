@@ -106,7 +106,7 @@ variables_url_dict = {
 # Create map with Folium
 m = folium.Map(
     location=centroid,
-    zoom_start=12,
+    zoom_start=13,
     tiles="CartoDB Positron",
 )
 # Add the analytic layer to the map
