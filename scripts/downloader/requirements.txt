@@ -1,7 +1,9 @@
 python-dotenv
 spai
 rasterio
-sentinelhub
 geopandas
 overpy
 geojson
+rioxarray
+odc-stac
+pystac-client
