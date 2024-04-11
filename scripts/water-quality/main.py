@@ -6,9 +6,6 @@ from spai.analytics.water_quality import water_quality
 from spai.storage import Storage
 from spai.config import SPAIVars
 from tqdm import tqdm
-from dotenv import load_dotenv
-
-load_dotenv()
 
 storage = Storage()["data"]
 vars = SPAIVars()
