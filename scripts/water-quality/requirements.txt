@@ -3,3 +3,4 @@ rasterio
 geopandas
 Pillow
 scikit-image
+tqdm

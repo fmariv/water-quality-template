@@ -2,7 +2,7 @@
 Script to run the water quality monitoring pipeline
 """
 
-from spai.analytics import water_quality
+from spai.analytics.water_quality import water_quality
 from spai.storage import Storage
 from spai.config import SPAIVars
 from tqdm import tqdm
