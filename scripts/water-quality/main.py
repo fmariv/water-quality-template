@@ -16,4 +16,5 @@ if __name__ == "__main__":
     images = storage.list(f"{collection}*.tif")
     aoi = vars["AOI"]
     for image in tqdm(images, desc="Processing images..."):
-        water_quality(image, aoi, storage)
+        date = image.split("_")[1].split(".")[0]  # Extract date from image name
+        water_quality(image, date, storage)
