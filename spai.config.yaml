@@ -9,6 +9,8 @@ scripts:
   - name: water-quality
     run_every: 1440
     run_on_start: True
+    wait_for:
+      - downloader
 apis:
   - name: analytics
     port: 8021
@@ -18,9 +20,10 @@ apis:
     host: localhost
 uis:
   - name: map
-    command: streamlit run main.py --server.address 0.0.0.0 --server.port 80
-    # command: streamlit run main.py --server.address localhost # for local development
-    port: 8501
-    env: # use api names as url placeholders
+    # command: npm run dev # for local development
+    command: npm run deploy
+    port: 5173
+    runtime: node
+    env:
       ANALYTICS_URL: api.analytics
       XYZ_URL: api.xyz

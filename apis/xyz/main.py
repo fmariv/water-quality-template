@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from spai.image.xyz import get_image_data, get_tile_data, ready_image
 from spai.image.xyz.errors import ImageOutOfBounds
 from spai.storage import Storage
+from spai.config import SPAIVars
 from starlette.responses import StreamingResponse
 
 # init api
@@ -30,6 +31,7 @@ app.add_middleware(
 )
 
 storage = Storage()["data"]
+vars = SPAIVars()
 
 
 @app.get("/")
@@ -43,6 +45,11 @@ def retrieve_images():
         List of available images in tif format
     """
     return storage.list("*.tif")
+
+
+@app.get("/aoi")
+def retrieve_aoi():
+    return vars["AOI"]
 
 
 @app.get("/{image}/{z}/{x}/{y}.png")

@@ -15,13 +15,12 @@ vars = SPAIVars()
 if __name__ == "__main__":
     # explore available images
     print("Looking for images in the last month")
-    # aoi = gpd.GeoDataFrame.from_features(project.aoi["features"])
     aoi = vars["AOI"]
     dates = vars["DATES"]
-    images = explore_satellite_imagery(aoi, dates)
+    images = explore_satellite_imagery(aoi, dates, cloud_cover=10)
 
-    if len(images) == 0:
-        raise ValueError("No images found")
+    if not images:
+        raise ValueError(f"No images found for the given datetime: {dates}")
 
     # download images and save locally
     collection = "sentinel-2-l2a"
