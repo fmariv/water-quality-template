@@ -154,10 +154,10 @@
 		analytics = data;
 		analyticsStore.set(analytics);
 		currentAnalytic.set('Turbidity');
-		image = 'ndti_categorized_rgb_';
-		bands = [1, 2, 3];
-		stretch = [0, 255];
-		palette = 'RdYlGn';
+		image = 'ndti_masked_'; // Change to RGB
+		bands = [1];
+		stretch = [-1, 1];
+		palette = 'RdYlGn_r';
 		selectedButton = 'turbidity';
 	};
 
@@ -176,10 +176,10 @@
 		analytics = data;
 		analyticsStore.set(analytics);
 		currentAnalytic.set('Chlorophyll');
-		image = 'ndci_categorized_rgb_';
-		bands = [1, 2, 3];
-		stretch = [0, 255];
-		palette = 'RdYlGn';
+		image = 'ndci_masked_'; // Change to RGB
+		bands = [1];
+		stretch = [-1, 1];
+		palette = 'RdYlGn_r';
 		selectedButton = 'chlorophyll';
 	};
 
@@ -198,10 +198,10 @@
 		analytics = data;
 		analyticsStore.set(analytics);
 		currentAnalytic.set('DOC');
-		image = 'DOC_categorized_rgb_';
-		bands = [1, 2, 3];
-		stretch = [0, 255];
-		palette = 'RdYlGn';
+		image = 'DOC_masked_'; // Change to RGB
+		bands = [1];
+		stretch = [0, 100];
+		palette = 'RdYlGn_r';
 		selectedButton = 'doc';
 	};
 </script>
