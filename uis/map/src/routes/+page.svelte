@@ -18,11 +18,18 @@
 	$: analyticsStore.set(analytics);
 
 	let layer;
+	let errorMessage = '';
 
 	$: sat_images = images
 		.filter((image) => image.includes('sentinel-2-l2a'))
 		.map((image) => image.split('_')[1].split('.')[0])
 		.sort((a, b) => compareAsc(parseISO(a), parseISO(b)));
+
+	// Check if there are no images available
+	$: if (sat_images.length === 0) {
+		errorMessage = 'No images or layers have been found.';
+		alert(errorMessage);
+	}
 
 	let currentImageLeft, currentImageRight;
 	$: if (!currentImageLeft) currentImageLeft = sat_images[0];
@@ -37,6 +44,12 @@
 	}
 </script>
 
+<div
+	class="error-message"
+	style="color: red; font-weight: bold; padding: 10px; background: #ffe0e0;"
+>
+	{errorMessage}
+</div>
 <div class="w-screen h-screen flex flex-row gap-3 p-3">
 	<div class="flex flex-col flex-1 gap-3">
 		<Map
@@ -70,43 +83,45 @@
 				/>
 			{/if}
 			<LayersControl layers={['light', 'dark', 'streets', 'satellite']} bind:layer />
-			<DateSelector dates={sat_images} onChange={onChangeLeft} selected={currentImageLeft} />
-			<DateSelector
-				dates={sat_images}
-				onChange={onChangeRight}
-				position="right-2"
-				selected={currentImageRight}
-			/>
-			<ImageLayer
-				XYZ_URL={xyz_url}
-				name="sat"
-				image={'sentinel-2-l2a_' + currentImageLeft + '.tif'}
-				options={{
-					maxZoom: 20,
-					pane: 'left'
-				}}
-			/>
-			<ImageLayer
-				XYZ_URL={xyz_url}
-				name="sat"
-				image={'sentinel-2-l2a_' + currentImageLeft + '.tif'}
-				options={{
-					maxZoom: 20,
-					pane: 'left'
-				}}
-			/>
-			<ImageLayer
-				XYZ_URL={xyz_url}
-				name="sat"
-				image={'sentinel-2-l2a_' + currentImageRight + '.tif'}
-				options={{
-					maxZoom: 20,
-					pane: 'right'
-				}}
-			/>
-			<Slider />
+			{#if !errorMessage}
+				<DateSelector dates={sat_images} onChange={onChangeLeft} selected={currentImageLeft} />
+				<DateSelector
+					dates={sat_images}
+					onChange={onChangeRight}
+					position="right-2"
+					selected={currentImageRight}
+				/>
+				<ImageLayer
+					XYZ_URL={xyz_url}
+					name="sat"
+					image={'sentinel-2-l2a_' + currentImageLeft + '.tif'}
+					options={{
+						maxZoom: 20,
+						pane: 'left'
+					}}
+				/>
+				<ImageLayer
+					XYZ_URL={xyz_url}
+					name="sat"
+					image={'sentinel-2-l2a_' + currentImageLeft + '.tif'}
+					options={{
+						maxZoom: 20,
+						pane: 'left'
+					}}
+				/>
+				<ImageLayer
+					XYZ_URL={xyz_url}
+					name="sat"
+					image={'sentinel-2-l2a_' + currentImageRight + '.tif'}
+					options={{
+						maxZoom: 20,
+						pane: 'right'
+					}}
+				/>
+				<Slider />
+			{/if}
 		</Map>
-		{#if $currentAnalytic !== ''}
+		{#if $currentAnalytic !== '' && !errorMessage}
 			<Timeline height={200} />
 		{/if}
 	</div>
