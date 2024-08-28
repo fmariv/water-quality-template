@@ -43,12 +43,14 @@
 	}
 </script>
 
-<div
-	class="error-message"
-	style="color: red; font-weight: bold; padding: 10px; background: #ffe0e0;"
->
-	{errorMessage}
-</div>
+{#if errorMessage}
+	<div
+		class="error-message"
+		style="color: red; font-weight: bold; padding: 10px; background: #ffe0e0;"
+	>
+		{errorMessage}
+	</div>
+{/if}
 <div class="w-screen h-screen flex flex-row gap-3 p-3">
 	<div class="flex flex-col flex-1 gap-3">
 		<Map
