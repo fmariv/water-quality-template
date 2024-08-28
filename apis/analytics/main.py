@@ -48,6 +48,10 @@ async def analytics(analytics_file: str):
         If analytics file doesn't exist
     """
     try:
+        if not storage.exists(f"{analytics_file}.json"):
+            raise HTTPException(
+                status_code=404, detail=f"{analytics_file} file not found"
+            )
         analytics = storage.read(f"{analytics_file}.json")
         # Format date to ensure it is in the correct format
         if isinstance(analytics.index, pd.DatetimeIndex):

@@ -92,6 +92,10 @@ def retrieve_image_tile(
     HTTPException
         If image is not found
     """
+    if not storage.exists(image):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Image not found"
+        )
     image_path = storage.get_path(image)
     tile_size = (256, 256)
     if len(bands) == 1:
