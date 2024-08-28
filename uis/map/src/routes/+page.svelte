@@ -28,7 +28,6 @@
 	// Check if there are no images available
 	$: if (sat_images.length === 0) {
 		errorMessage = 'No images or layers have been found.';
-		alert(errorMessage);
 	}
 
 	let currentImageLeft, currentImageRight;
