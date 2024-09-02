@@ -3,14 +3,9 @@ storage:
   - name: data
     type: s3
 scripts:
-  - name: downloader
-    run_every: 1440 # Download images every day
-    run_on_start: True
   - name: water-quality
     run_every: 1440
     run_on_start: True
-    wait_for:
-      - downloader
 apis:
   - name: analytics
     port: 8021

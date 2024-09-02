@@ -1,6 +1,13 @@
+python-dotenv
 spai
 rasterio
 geopandas
+overpy
+geojson
+rioxarray
+odc-stac
+odc-geo=0.4.3
+pystac-client
 Pillow
 scikit-image
 tqdm
