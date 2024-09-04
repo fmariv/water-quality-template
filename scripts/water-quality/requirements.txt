@@ -6,7 +6,7 @@ overpy
 geojson
 rioxarray
 odc-stac
-odc-geo=0.4.3
+odc-geo==0.4.3
 pystac-client
 Pillow
 scikit-image
