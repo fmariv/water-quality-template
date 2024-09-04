@@ -1,8 +1,8 @@
 import { env } from '$env/dynamic/private';
 
 export async function load({fetch}) {
-	const xyz_url = 'http://' +  env.XYZ_URL;
-	const analytics_url = 'http://' +  env.ANALYTICS_URL;
+	const xyz_url = 'https://' +  env.XYZ_URL;
+	const analytics_url = 'https://' +  env.ANALYTICS_URL;
 	let res = [
 		await fetch(`${xyz_url}/`),
 		await fetch(`${analytics_url}/table_water_extent`),
