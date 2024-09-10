@@ -1,30 +1,26 @@
 """
-XYZ API
+Analytics API
 """
 
-from typing import Optional
 import argparse
+from typing import Optional
+
+import pandas as pd
 
 import uvicorn
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from spai.image.xyz import get_image_data, get_tile_data, ready_image
-from spai.image.xyz.errors import ImageOutOfBounds
-from spai.storage import Storage
-from spai.config import SPAIVars
 from starlette.responses import StreamingResponse
 
-# init api
-app = FastAPI(title="xyz")
+from spai.storage import Storage
+from spai.config import SPAIVars
+from spai.image.xyz import get_image_data, get_tile_data, ready_image
+from spai.image.xyz.errors import ImageOutOfBounds
 
-# configure CORS
-origins = [
-    "*",
-]
-
+app = FastAPI(title="api")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -34,7 +30,47 @@ storage = Storage()["data"]
 vars = SPAIVars()
 
 
-@app.get("/")
+@app.get("/analytics/{analytics_file}")
+async def analytics(analytics_file: str):
+    """
+    Return water quality analytics
+
+    Parameters
+    ----------
+    analytics_file : str
+        Name of analytics file
+
+    Parameters
+    ----------
+    analytics_file : str
+        Name of analytics file
+
+    Returns
+    -------
+    analytics : dict
+        Dictionary with water quality analytics
+
+    Raises
+    ------
+    HTTPException
+        If analytics file doesn't exist
+    """
+    try:
+        if not storage.exists(f"{analytics_file}.json"):
+            raise HTTPException(
+                status_code=404, detail=f"{analytics_file} file not found"
+            )
+        analytics = storage.read(f"{analytics_file}.json")
+        # Format date to ensure it is in the correct format
+        if isinstance(analytics.index, pd.DatetimeIndex):
+            analytics.index = analytics.index.strftime("%Y-%m-%d")
+        analytics = analytics.to_dict()
+        return analytics
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/images")
 def retrieve_images():
     """
     Return available images
@@ -52,7 +88,7 @@ def retrieve_aoi():
     return vars["AOI"]
 
 
-@app.get("/{image}/{z}/{x}/{y}.png")
+@app.get("/images/{image}/{z}/{x}/{y}.png")
 def retrieve_image_tile(
     image: str,
     z: int,
@@ -116,6 +152,6 @@ def retrieve_image_tile(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--host", type=str, default="0.0.0.0")
-    parser.add_argument("--port", type=int, default=8080)
+    parser.add_argument("--port", type=int, default=8000)
     args = parser.parse_args()
     uvicorn.run(app, host=args.host, port=args.port)

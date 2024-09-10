@@ -12,18 +12,21 @@
 
 	export let data;
 
-	$: ({ images, analytics, analytics_url, xyz_url, aoi } = data);
+	$: ({ api_url, images, analytics, aoi } = data);
 
 	$: currentAnalytic.set('Water extent');
 	$: analyticsStore.set(analytics);
 
 	let layer;
 	let errorMessage = '';
+	let xyz_url = '';
 
 	$: sat_images = images
 		.filter((image) => image.includes('sentinel-2-l2a'))
 		.map((image) => image.split('_')[1].split('.')[0])
 		.sort((a, b) => compareAsc(parseISO(a), parseISO(b)));
+
+	$: xyz_url = `${api_url}/images`;
 
 	// Check if there are no images available
 	$: if (sat_images.length === 0) {
@@ -136,7 +139,7 @@
 				date={currentImageRight}
 				left={currentImageLeft}
 				{xyz_url}
-				{analytics_url}
+				{api_url}
 			/>
 		{/if}
 	</div>

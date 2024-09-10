@@ -1,19 +1,17 @@
 import { env } from '$env/dynamic/private';
 
 export async function load({fetch}) {
-	const xyz_url = 'https://' +  env.XYZ_URL;
-	const analytics_url = 'https://' +  env.ANALYTICS_URL;
+	const api_url = 'https://' +  env.API_URL;
 	let res = [
-		await fetch(`${xyz_url}/`),
-		await fetch(`${analytics_url}/table_water_extent`),
-		await fetch(`${xyz_url}/aoi`)
+		await fetch(`${api_url}/images`),
+		await fetch(`${api_url}/analytics/table_water_extent`),
+		await fetch(`${api_url}/aoi`)
 	];
 	const [images, analytics, aoi] = await Promise.all(res.map(r => r.json()));
 	return {
-		xyz_url,
+		api_url,
 		images,
 		analytics,
-		analytics_url,
 		aoi
 	};
 }

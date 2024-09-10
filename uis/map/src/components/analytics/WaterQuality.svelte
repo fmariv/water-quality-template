@@ -11,7 +11,7 @@
 	export let analytics;
 	export let date;
 	export let xyz_url;
-	export let analytics_url;
+	export let api_url;
 	export let left;
 
 	$: title = $currentAnalytic;
@@ -125,7 +125,7 @@
 		if (!selected) {
 			selected = true;
 		}
-		const response = await fetch(`${analytics_url}/table_water_extent`);
+		const response = await fetch(`${api_url}/analytics/table_water_extent`);
 		const data = await response.json();
 		analytics = data;
 		analyticsStore.set(analytics);
@@ -147,7 +147,7 @@
 		if (!selected) {
 			selected = true;
 		}
-		const response = await fetch(`${analytics_url}/table_turbidity_Ha`);
+		const response = await fetch(`${api_url}/analytics/table_turbidity_Ha`);
 		const data = await response.json();
 		analytics = data;
 		analyticsStore.set(analytics);
@@ -169,7 +169,7 @@
 		if (!selected) {
 			selected = true;
 		}
-		const response = await fetch(`${analytics_url}/table_chlorophyll_Ha`);
+		const response = await fetch(`${api_url}/analytics/table_chlorophyll_Ha`);
 		const data = await response.json();
 		analytics = data;
 		analyticsStore.set(analytics);
@@ -191,7 +191,7 @@
 		if (!selected) {
 			selected = true;
 		}
-		const response = await fetch(`${analytics_url}/table_DOC_Ha`);
+		const response = await fetch(`${api_url}/analytics/table_DOC_Ha`);
 		const data = await response.json();
 		analytics = data;
 		analyticsStore.set(analytics);

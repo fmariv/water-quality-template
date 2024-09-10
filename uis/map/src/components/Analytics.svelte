@@ -6,14 +6,14 @@
 	export let aoi;
 	export let date;
 	export let xyz_url;
-	export let analytics_url;
+	export let api_url;
 	export let left;
 
 	let selected = false;
 </script>
 
 <div>
-	<WaterQuality {analytics} {date} {xyz_url} {analytics_url} {left} />
+	<WaterQuality {analytics} {date} {xyz_url} {api_url} {left} />
 </div>
 
 {#if selected}
