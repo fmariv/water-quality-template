@@ -131,7 +131,7 @@
 			<Timeline height={200} />
 		{/if}
 	</div>
-	<div class="w-[200px]">
+	<div class="w-[250px]">
 		{#if !errorMessage}
 			<Analytics
 				{analytics}

@@ -38,7 +38,7 @@
 			},
 			dataLabels: {
 				formatter: function (val, opts) {
-					return parseInt(0.01 * val * analytics['Total']['2020-01-08']).toLocaleString('en-US');
+					return parseInt(0.01 * val * analytics['Total'][date]).toLocaleString('en-US');
 				}
 			},
 			colors: ['#3550BF', '#BF3535'],
