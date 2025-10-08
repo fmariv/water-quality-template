@@ -10,11 +10,19 @@ apis:
   - name: api
     port: 8021
     host: localhost
+    autoscaling:
+      min: 1
+      max: 1
+      keep_alive: 60
 uis:
   - name: map
     # command: npm run dev # for local development
     command: npm run deploy
     port: 5173
     runtime: node
+    autoscaling:
+      min: 1
+      max: 1
+      keep_alive: 60
     env:
       API_URL: api.api
