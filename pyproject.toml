@@ -25,7 +25,8 @@ dependencies = [
     "rioxarray>=0.18.2",
     "scikit-image>=0.25.2",
     "shapely==2.1.1",
-    "spai==2025.8.6.post2",
+    "spai==2025.10.9.dev0",
     "tqdm>=4.67.1",
     "uvicorn==0.35.0",
+    "minio==7.1.15"
 ]

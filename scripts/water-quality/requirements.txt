@@ -12,3 +12,4 @@ Pillow>=10.4.0
 scikit-image>=0.25.2
 tqdm>=4.67.1
 matplotlib>=3.10.3
+minio==7.1.15

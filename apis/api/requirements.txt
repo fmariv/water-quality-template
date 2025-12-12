@@ -12,3 +12,4 @@ Pillow==10.4.0
 mercantile==1.2.1
 cachetools==6.1.0
 shapely==2.1.1
+minio==7.1.15
