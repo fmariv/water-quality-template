@@ -4,7 +4,6 @@ storage:
     type: s3
 scripts:
   - name: water-quality
-    run_every: 1440
     run_on_start: True
 apis:
   - name: api
