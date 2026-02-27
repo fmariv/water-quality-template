@@ -79,7 +79,7 @@
 				/>
 			{:else if layer == 'streets'}
 				<TileLayer
-					url={'https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png'}
+					url={'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'}
 					options={{ maxZoom: 20, zIndex: 1 }}
 				/>
 			{:else if layer == 'dark'}
