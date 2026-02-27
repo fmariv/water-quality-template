@@ -67,18 +67,28 @@
 			]}
 			{aoi}
 		>
-			{#if layer == 'streets'}
+			{#if layer == 'light'}
 				<TileLayer
-					url={`https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png`}
+					url={'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png'}
 					options={{ maxZoom: 20, zIndex: 1 }}
 				/>
 			{:else if layer == 'satellite'}
 				<TileLayer
-					url={`https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}`}
+					url={'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'}
+					options={{ maxZoom: 20, zIndex: 1 }}
+				/>
+			{:else if layer == 'streets'}
+				<TileLayer
+					url={'https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png'}
+					options={{ maxZoom: 20, zIndex: 1 }}
+				/>
+			{:else if layer == 'dark'}
+				<TileLayer
+					url={'https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png'}
 					options={{ maxZoom: 20, zIndex: 1 }}
 				/>
 			{/if}
-			<LayersControl layers={['streets', 'satellite']} bind:layer />
+			<LayersControl layers={['light', 'dark', 'streets', 'satellite']} bind:layer />
 			{#if !errorMessage}
 				<DateSelector dates={sat_images} onChange={onChangeLeft} selected={currentImageLeft} />
 				<DateSelector
