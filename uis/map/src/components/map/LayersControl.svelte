@@ -1,16 +1,24 @@
 <script>
+	/**
+	 * Canonical basemap selector for SPAI template UIs.
+	 * Source: spai-new/components-library/components/LayersControl.svelte
+	 */
 	export let layers = ['satellite', 'streets'];
-	let _layers = layers[0];
-
+	export let labels = {
+		satellite: 'Satellite',
+		streets: 'Streets'
+	};
 	export let layer = null;
-	$: layer = _layers;
+
+	$: defaultLayer = layers.includes('satellite') ? 'satellite' : (layers[0] ?? null);
+	$: if (!layer || !layers.includes(layer)) layer = defaultLayer;
 </script>
 
-<form>
-	{#each layers as layer}
+<form aria-label="Basemap selector">
+	{#each layers as layerId}
 		<label>
-			<input type="radio" bind:group={_layers} name="layers" value={layer} />
-			{layer}
+			<input type="radio" bind:group={layer} name="layers" value={layerId} />
+			{labels[layerId] ?? layerId}
 		</label>
 	{/each}
 </form>

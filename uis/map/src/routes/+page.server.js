@@ -25,8 +25,6 @@ export async function load({ fetch }) {
 	const [images, analytics, aoi] = await Promise.all(res.map((r) => r.json()));
 	return {
 		api_url,
-		images,
-		analytics,
 		aoi
 	};
 }
