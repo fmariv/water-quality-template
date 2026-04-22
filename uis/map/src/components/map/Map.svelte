@@ -20,18 +20,8 @@
 		if (browser) {
 			const L = await import("leaflet");
 			_map = L.map("map", options);
-			const fallbackPosition = position ?? [0, 0];
-			const fallbackZoom = zoom ?? 2;
-			try {
-				const bounds = aoi ? L.geoJSON(aoi).getBounds() : null;
-				if (bounds?.isValid()) {
-					_map.fitBounds(bounds);
-				} else {
-					_map.setView(fallbackPosition, fallbackZoom);
-				}
-			} catch {
-				_map.setView(fallbackPosition, fallbackZoom);
-			}
+			if (aoi) _map.fitBounds(L.geoJSON(aoi).getBounds());
+			else _map.setView(position, zoom);
 			_map.zoomControl.setPosition(zoomPosition);
 			panes?.forEach(({ name, zIndex }) => {
 				_map.createPane(name);
