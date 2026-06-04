@@ -11,6 +11,9 @@ import uvicorn
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import StreamingResponse
+from prometheus_fastapi_instrumentator import Instrumentator
+    
+
 
 from spai.storage import Storage
 from spai.config import SPAIVars
@@ -25,6 +28,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+Instrumentator().instrument(app).expose(app=app)
 
 storage = Storage()["data"]
 vars = SPAIVars()
@@ -148,6 +153,10 @@ def retrieve_image_tile(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error.message)
 
 
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
 # need this to run in background
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -155,3 +164,5 @@ if __name__ == "__main__":
     parser.add_argument("--port", type=int, default=8000)
     args = parser.parse_args()
     uvicorn.run(app, host=args.host, port=args.port)
+
+
