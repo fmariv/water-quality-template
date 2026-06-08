@@ -7,6 +7,7 @@ from spai.analytics.water_quality import water_quality
 from spai.storage import Storage
 from spai.config import SPAIVars
 from spai.logging import log
+from spai.logging.log import Result
 from tqdm import tqdm
 
 storage = Storage()["data"]
@@ -59,21 +60,33 @@ if __name__ == "__main__":
             date = downloaded_image.split("_")[1].split(".")[0]
             water_quality(downloaded_image, date, storage)
 
-        def _read_rows(table_name):
+        def _read_table(table_name):
             if table_name not in storage.list():
-                return {}
+                return None
             df = storage.read(table_name)
             if hasattr(df.index, "strftime"):
                 df.index = df.index.strftime("%Y-%m-%d")
-            return {d: df.loc[d].round(2).to_dict() for d in dates_in_run if d in df.index}
+            return df.loc[[d for d in dates_in_run if d in df.index]]
 
-        log.log_results({
-            "images_processed": len(dates_in_run),
-            "dates_processed": dates_in_run,
-            "water_extent_ha": _read_rows("table_water_extent.json"),
-            "turbidity_pct": _read_rows("table_turbidity_percent.json"),
-            "chlorophyll_pct": _read_rows("table_chlorophyll_percent.json"),
-            "doc_pct": _read_rows("table_DOC_percent.json"),
-        })
+        def _avg(df, col):
+            if df is None or col not in df.columns:
+                return None
+            return round(float(df[col].mean()), 2)
+
+        extent_df = _read_table("table_water_extent.json")
+        turbidity_df = _read_table("table_turbidity_percent.json")
+        chlorophyll_df = _read_table("table_chlorophyll_percent.json")
+        doc_df = _read_table("table_DOC_percent.json")
+
+        log.log_results([
+            Result("water_extent",        _avg(extent_df,      "Water [Has]"),    "ha"),
+            Result("turbidity_bad",       _avg(turbidity_df,   "Bad [%]"),        "%"),
+            Result("chlorophyll_bad",     _avg(chlorophyll_df, "Bad [%]"),        "%"),
+            Result("doc_bad",             _avg(doc_df,         "Bad [%]"),        "%"),
+            Result("turbidity_careful",   _avg(turbidity_df,   "Careful [%]"),    "%"),
+            Result("chlorophyll_careful", _avg(chlorophyll_df, "Careful [%]"),    "%"),
+            Result("doc_careful",         _avg(doc_df,         "Careful [%]"),    "%"),
+            Result("images_processed",    len(dates_in_run),                      "images"),
+        ])
     except Exception as e:
-        print(f"An error occurred: {e}. The process will stop.")
+        raise e
