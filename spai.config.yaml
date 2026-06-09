@@ -1,10 +1,12 @@
 project: water-quality-template
 storage:
   - name: data
-    type: s3
+    type: local
 scripts:
   - name: water-quality
     run_on_start: True
+    resources:
+      memory: 500Mi
 apis:
   - name: api
     port: 8021
