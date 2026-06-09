@@ -91,4 +91,4 @@ if __name__ == "__main__":
             Result("images_processed",    len(dates_in_run),                      "images"),
         ])
     except Exception as e:
-        print("An error occurred:", e)
+        raise e
