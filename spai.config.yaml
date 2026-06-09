@@ -5,6 +5,8 @@ storage:
 scripts:
   - name: water-quality
     run_on_start: True
+    resources:
+      memory: 2Gi
 apis:
   - name: api
     port: 8021
