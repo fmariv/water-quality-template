@@ -1,7 +1,7 @@
 project: water-quality-template
 storage:
   - name: data
-    type: local
+    type: s3
 scripts:
   - name: water-quality
     run_on_start: True
