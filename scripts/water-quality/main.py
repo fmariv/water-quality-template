@@ -14,21 +14,6 @@ storage = Storage()["data"]
 vars = SPAIVars()
 
 
-def _read_table(table_name):
-    if table_name not in storage.list():
-        return None
-    df = storage.read(table_name)
-    if hasattr(df.index, "strftime"):
-        df.index = df.index.strftime("%Y-%m-%d")
-    return df.loc[[d for d in dates_in_run if d in df.index]]
-
-def _avg(df, col):
-    if df is None or col not in df.columns:
-        return None
-    return round(float(df[col].mean()), 2)
-
-
-
 if __name__ == "__main__":
 
     cloud_cover = 10
@@ -75,6 +60,19 @@ if __name__ == "__main__":
             date = downloaded_image.split("_")[1].split(".")[0]
             water_quality(downloaded_image, date, storage)
 
+        def _read_table(table_name):
+            if table_name not in storage.list():
+                return None
+            df = storage.read(table_name)
+            if hasattr(df.index, "strftime"):
+                df.index = df.index.strftime("%Y-%m-%d")
+            return df.loc[[d for d in dates_in_run if d in df.index]]
+
+        def _avg(df, col):
+            if df is None or col not in df.columns:
+                return None
+            return round(float(df[col].mean()), 2)
+
         extent_df = _read_table("table_water_extent.json")
         turbidity_df = _read_table("table_turbidity_percent.json")
         chlorophyll_df = _read_table("table_chlorophyll_percent.json")
@@ -91,4 +89,4 @@ if __name__ == "__main__":
             Result("images_processed",    len(dates_in_run),                      "images"),
         ])
     except Exception as e:
-        print("An error occurred:", e)
+        raise e
