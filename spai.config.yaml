@@ -7,10 +7,12 @@ scripts:
     run_on_start: True
     resources:
       memory: 2Gi
+    image: europe-west1-docker.pkg.dev/spai-430907/spai-build/water-quality-template-script:latest
 apis:
   - name: api
     port: 8021
     host: localhost
+    image: europe-west1-docker.pkg.dev/spai-430907/spai-build/water-quality-template-api:latest
     autoscaling:
       min: 1
       max: 1
@@ -21,6 +23,7 @@ uis:
     command: npm run deploy
     port: 5173
     runtime: node
+    image: europe-west1-docker.pkg.dev/spai-430907/spai-build/water-quality-template-ui:latest
     autoscaling:
       min: 1
       max: 1

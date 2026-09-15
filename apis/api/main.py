@@ -20,6 +20,8 @@ from spai.config import SPAIVars
 from spai.image.xyz import get_image_data, get_tile_data, ready_image
 from spai.image.xyz.errors import ImageOutOfBounds
 
+from src.pipeline_status import data_available_payload, read_pipeline_status
+
 app = FastAPI(title="api")
 app.add_middleware(
     CORSMiddleware,
@@ -156,6 +158,18 @@ def retrieve_image_tile(
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+@app.get("/pipeline/status")
+def pipeline_status():
+    """Current pipeline status registry from storage."""
+    return read_pipeline_status(storage)
+
+
+@app.get("/data_available")
+def data_available():
+    """Whether the pipeline has produced ready outputs."""
+    return data_available_payload(read_pipeline_status(storage))
 
 # need this to run in background
 if __name__ == "__main__":

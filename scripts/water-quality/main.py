@@ -2,6 +2,8 @@
 Script to download satellite images and run the water quality monitoring pipeline
 """
 
+import logging
+
 from spai.data.satellite import download_satellite_imagery, explore_satellite_imagery
 from spai.analytics.water_quality import water_quality
 from spai.storage import Storage
@@ -10,8 +12,11 @@ from spai.logging import log
 from spai.logging.log import Result
 from tqdm import tqdm
 
+from src.status_registry import BUILDING, READY, set_error, set_status
+
 storage = Storage()["data"]
 vars = SPAIVars()
+logger = logging.getLogger(__name__)
 
 
 def _read_table(table_name):
@@ -42,6 +47,7 @@ if __name__ == "__main__":
     
     
     try:
+        set_status(storage, BUILDING, "Looking for satellite images...")
         # explore available images
         print("Looking for images in the last month")
         aoi = vars["AOI"]
@@ -54,6 +60,7 @@ if __name__ == "__main__":
         # download images and save locally
         collection = "sentinel-2-l2a"
         print("Found", len(images), f"image{'s' if len(images) > 1 else ''}")
+        set_status(storage, BUILDING, "Downloading satellite images...")
         for image in tqdm(images, desc="Downloading images..."):
             existing_images = storage.list(f"{collection}*.tif")
             dates = [image.split("_")[1].split(".")[0] for image in existing_images]
@@ -70,6 +77,7 @@ if __name__ == "__main__":
         downloaded_images = storage.list(f"{collection}*.tif")
 
         dates_in_run = [img.split("_")[1].split(".")[0] for img in downloaded_images]
+        set_status(storage, BUILDING, "Processing water quality analytics...")
         for downloaded_image in tqdm(downloaded_images, desc="Processing images..."):
             date = downloaded_image.split("_")[1].split(".")[0]
             water_quality(downloaded_image, date, storage)
@@ -89,5 +97,8 @@ if __name__ == "__main__":
             Result("doc_careful",         _avg(doc_df,         "Careful [%]"),    "%"),
             Result("images_processed",    len(dates_in_run),                      "images"),
         ])
-    except Exception as e:
-        raise e
+        set_status(storage, READY, "Pipeline completed successfully")
+    except Exception:
+        logger.exception("Pipeline failed")
+        set_error(storage)
+        raise

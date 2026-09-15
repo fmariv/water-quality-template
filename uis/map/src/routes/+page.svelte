@@ -10,6 +10,7 @@
 	import Analytics from '$components/Analytics.svelte';
 	import Slider from '$components/map/Slider.svelte';
 	import { analyticsStore, currentAnalytic } from '$stores/analytics.js';
+	import PipelineStatusBanner from '$components/PipelineStatusBanner.svelte';
 
 	export let data;
 
@@ -58,7 +59,8 @@
 	</div>
 {/if}
 <div class="w-screen h-screen flex flex-row gap-3 p-3">
-	<div class="flex flex-col flex-1 gap-3">
+	<div class="relative flex flex-col flex-1 gap-3">
+		<PipelineStatusBanner {api_url} />
 		<Map
 			zoom={6}
 			panes={[
