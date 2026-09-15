@@ -14,8 +14,8 @@ from tqdm import tqdm
 
 from src.status_registry import BUILDING, READY, set_error, set_status
 
-storage = Storage()["data"]
-vars = SPAIVars()
+storage = None
+vars = None
 logger = logging.getLogger(__name__)
 
 
@@ -37,16 +37,18 @@ if __name__ == "__main__":
 
     cloud_cover = 10
 
-    log.log_inputs(
-        {
-            "aoi": vars["AOI"],
-            "dates": vars["DATES"],
-            "cloud_cover": cloud_cover,
-            "collection": "sentinel-2-l2a"
-    })
-    
-    
     try:
+        storage = Storage()["data"]
+        vars = SPAIVars()
+
+        log.log_inputs(
+            {
+                "aoi": vars["AOI"],
+                "dates": vars["DATES"],
+                "cloud_cover": cloud_cover,
+                "collection": "sentinel-2-l2a"
+        })
+
         set_status(storage, BUILDING, "Looking for satellite images...")
         # explore available images
         print("Looking for images in the last month")
@@ -100,5 +102,10 @@ if __name__ == "__main__":
         set_status(storage, READY, "Pipeline completed successfully")
     except Exception:
         logger.exception("Pipeline failed")
-        set_error(storage)
+        try:
+            if storage is None:
+                storage = Storage()["data"]
+            set_error(storage)
+        except Exception:
+            logger.warning("Failed to write pipeline error status", exc_info=True)
         raise

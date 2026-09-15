@@ -17,16 +17,26 @@ function apiBaseUrl() {
 export async function load({ fetch }) {
 	const api_url = apiBaseUrl();
 
-	const res = [
-		await fetch(`${api_url}/images`),
-		await fetch(`${api_url}/analytics/table_water_extent`),
-		await fetch(`${api_url}/aoi`)
-	];
-	const [images, analytics, aoi] = await Promise.all(res.map((r) => r.json()));
+	const safeFetch = async (path) => {
+		try {
+			const res = await fetch(`${api_url}${path}`);
+			if (res.ok) return await res.json();
+		} catch {
+			// API may be unavailable during bootstrap
+		}
+		return null;
+	};
+
+	const [images, analytics, aoi] = await Promise.all([
+		safeFetch('/images'),
+		safeFetch('/analytics/table_water_extent'),
+		safeFetch('/aoi')
+	]);
+
 	return {
 		api_url,
-		images,
-		analytics,
-		aoi
+		images: images ?? [],
+		analytics: analytics ?? {},
+		aoi: aoi ?? null
 	};
 }

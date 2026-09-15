@@ -3,10 +3,10 @@ FROM node:24
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN yarn install
 COPY . .
 COPY .env .env
 
 EXPOSE 80
 
-CMD npm run deploy
+CMD yarn run build && yarn run preview --host 0.0.0.0 --port 80

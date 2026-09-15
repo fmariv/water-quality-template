@@ -21,6 +21,7 @@ from spai.image.xyz import get_image_data, get_tile_data, ready_image
 from spai.image.xyz.errors import ImageOutOfBounds
 
 from src.pipeline_status import data_available_payload, read_pipeline_status
+from src.lazy import LazyObject
 
 app = FastAPI(title="api")
 app.add_middleware(
@@ -33,8 +34,8 @@ app.add_middleware(
 
 Instrumentator().instrument(app).expose(app=app)
 
-storage = Storage()["data"]
-vars = SPAIVars()
+storage = LazyObject(lambda: Storage()["data"])
+vars = LazyObject(SPAIVars)
 
 
 @app.get("/analytics/{analytics_file}")
