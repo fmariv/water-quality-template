@@ -23,7 +23,7 @@ from spai.image.xyz.errors import ImageOutOfBounds
 from src.pipeline_status import data_available_payload, read_pipeline_status
 from src.lazy import LazyObject
 
-app = FastAPI(title="api")
+app = FastAPI(title="SPAI API — water-quality")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -36,6 +36,18 @@ Instrumentator().instrument(app).expose(app=app)
 
 storage = LazyObject(lambda: Storage()["data"])
 vars = LazyObject(SPAIVars)
+
+
+@app.get("/", include_in_schema=False)
+def root():
+    return {
+        "service": "SPAI API",
+        "name": "water-quality",
+        "status": "ok",
+        "docs": "/docs",
+        "health": "/health",
+        "pipeline_status": "/pipeline/status",
+    }
 
 
 @app.get("/analytics/{analytics_file}")

@@ -110,10 +110,13 @@ def read_pipeline_status(
     storage: Any,
     path: str = DEFAULT_STATUS_PATH,
 ) -> dict:
-    """Read ``pipeline_status.json`` from storage as a flat JSON-serializable dict."""
-    if not storage.exists(path):
-        return dict(_IDLE)
+    """Read ``pipeline_status.json`` from storage as a flat JSON-serializable dict.
+
+    Never raises — Storage/LazyObject failures return Idle so the UI poller stays healthy.
+    """
     try:
+        if not storage.exists(path):
+            return dict(_IDLE)
         raw = storage.read(path)
         return normalize_status_payload(raw)
     except Exception:

@@ -168,9 +168,9 @@ def set_error(storage: Any, *, path: Optional[str] = None) -> None:
 def get_status(storage: Any, *, path: Optional[str] = None) -> dict:
     """Read current pipeline status from storage (always returns a flat str dict)."""
     status_path = path or STATUS_PATH
-    if not storage.exists(status_path):
-        return dict(_IDLE)
     try:
+        if not storage.exists(status_path):
+            return dict(_IDLE)
         raw = storage.read(status_path)
         return _normalize_status_payload(raw)
     except Exception as exc:

@@ -2,8 +2,9 @@ FROM node:24
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN yarn install
+COPY package.json ./
+COPY yarn.lock* ./
+RUN if [ -f yarn.lock ]; then yarn install --frozen-lockfile; else yarn install; fi
 COPY . .
 COPY .env .env
 

@@ -102,6 +102,10 @@
 	};
 
 	const fetchStatus = async () => {
+		if (!api_url) {
+			markUnreachable();
+			return;
+		}
 		try {
 			const res = await fetch(`${api_url}/pipeline/status`);
 			if (!res.ok) {
@@ -131,17 +135,19 @@
 			const msg = unwrap(data?.message);
 			message = msg == null ? '' : String(msg);
 
+			// Keep polling after Ready/Error so cron re-runs surface Building again
+			// without requiring a full page refresh.
 			if (next === 'Ready') {
-				stopPolling();
 				visible = true;
 				if (hideTimeout != null) clearTimeout(hideTimeout);
 				hideTimeout = setTimeout(() => {
 					visible = false;
 				}, READY_HIDE_MS);
-			} else if (next === 'Error') {
-				stopPolling();
-				visible = true;
 			} else {
+				if (hideTimeout != null) {
+					clearTimeout(hideTimeout);
+					hideTimeout = null;
+				}
 				visible = true;
 			}
 		} catch {
