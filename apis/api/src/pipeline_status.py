@@ -134,3 +134,16 @@ def data_available_payload(pipeline: Optional[dict] = None) -> dict:
         "pipeline_status": pipeline.get("status"),
         "message": pipeline.get("message"),
     }
+
+
+# Generic client-facing error when Storage/vars are unavailable (never leak internals).
+DATA_UNAVAILABLE_DETAIL = (
+    "Data temporarily unavailable. Check the logs or contact support."
+)
+
+
+def data_unavailable_http(status_code: int = 503):
+    """Return an HTTPException with a generic, non-leaking detail message."""
+    from fastapi import HTTPException
+
+    return HTTPException(status_code=status_code, detail=DATA_UNAVAILABLE_DETAIL)

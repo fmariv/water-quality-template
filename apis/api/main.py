@@ -20,7 +20,11 @@ from spai.config import SPAIVars
 from spai.image.xyz import get_image_data, get_tile_data, ready_image
 from spai.image.xyz.errors import ImageOutOfBounds
 
-from src.pipeline_status import data_available_payload, read_pipeline_status
+from src.pipeline_status import (
+    data_available_payload,
+    data_unavailable_http,
+    read_pipeline_status,
+)
 from src.lazy import LazyObject
 
 app = FastAPI(title="SPAI API — water-quality")
@@ -87,7 +91,7 @@ async def analytics(analytics_file: str):
         analytics = analytics.to_dict()
         return analytics
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Data temporarily unavailable. Check the logs or contact support.")
 
 
 @app.get("/images")
@@ -105,7 +109,10 @@ def retrieve_images():
 
 @app.get("/aoi")
 def retrieve_aoi():
-    return vars["AOI"]
+    try:
+        return vars["AOI"]
+    except Exception:
+        raise data_unavailable_http()
 
 
 @app.get("/images/{image}/{z}/{x}/{y}.png")
@@ -191,5 +198,4 @@ if __name__ == "__main__":
     parser.add_argument("--port", type=int, default=8000)
     args = parser.parse_args()
     uvicorn.run(app, host=args.host, port=args.port)
-
 

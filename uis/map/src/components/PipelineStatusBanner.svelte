@@ -97,11 +97,13 @@
 		consecutiveFailures += 1;
 		// Stay on Idle/Building ("Preparing…") during early / transient failures.
 		// Only surface Unreachable after sustained failure (~30s).
-		if (consecutiveFailures >= UNREACHABLE_AFTER) {
-			status = 'Unreachable';
-			message = '';
-			visible = true;
-		}
+		if (consecutiveFailures < UNREACHABLE_AFTER) return;
+		// If pipeline already finished successfully, ignore transient API blips —
+		// don't flash Unreachable over a working dashboard.
+		if (lastKnown === 'Ready') return;
+		status = 'Unreachable';
+		message = '';
+		visible = true;
 	};
 
 	const fetchStatus = async () => {
@@ -184,7 +186,7 @@
 			class="flex w-full max-w-[440px] items-start gap-3 border px-4 py-3 shadow-md"
 			style={`border-radius: 12px; ${cardStyle(status)}`}
 			role="status"
-			aria-live="assertive"
+			aria-live="polite"
 		>
 			{#if isProcessing(status)}
 				<span

@@ -6,7 +6,8 @@ COPY package.json ./
 COPY yarn.lock* ./
 RUN yarn install --frozen-lockfile || yarn install
 COPY . .
-COPY .env .env
+# Cloud images must not bake MapTiler/API secrets; always use HTTPS in PRO builds.
+RUN printf "VITE_ENV=PRO\n" > .env
 
 EXPOSE 80
 

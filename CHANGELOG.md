@@ -17,6 +17,17 @@ Releases use date-based versions: `YYYY.MM.dd`.
 - Bootstrap robustness: LazyObject Storage/Vars in the API; safe SSR fetches; scripts write `set_error` on early Storage failure.
 - Generic pipeline error messages for the UI banner.
 
+### Changed
+
+- Ready status banner only appears on a live Building→Ready transition (not on every dashboard visit).
+- UI Docker images overwrite `.env` with `VITE_ENV=PRO` only (no MapTiler keys baked into images).
+- API error responses no longer leak internal exception strings (generic 503/400/404 messages).
+
+### Fixed
+
+- SSR bootstrap: landslide + EWS use safe fetches; renewable no longer treats `GET /` as images.
+- Banner does not escalate to Unreachable after a successful Ready status (transient API blips).
+
 ## [2026.09.15]
 
 ### Added
