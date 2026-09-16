@@ -20,10 +20,13 @@
 	/** @type {'Idle'|'Building'|'Warning'|'Error'|'Ready'|'Unreachable'} */
 	let status = 'Idle';
 	let message = '';
-	let visible = true;
+	// Start hidden until the first poll — avoids a flash of "Preparing…" / "Ready".
+	let visible = false;
 	let pollId = null;
 	let hideTimeout = null;
 	let consecutiveFailures = 0;
+	/** @type {string | null} Last successfully polled status (null before first OK poll). */
+	let lastKnown = null;
 
 	const KNOWN = new Set(['Idle', 'Building', 'Warning', 'Error', 'Ready']);
 
@@ -131,6 +134,8 @@
 			}
 
 			consecutiveFailures = 0;
+			const prev = lastKnown;
+			lastKnown = next;
 			status = next;
 			const msg = unwrap(data?.message);
 			message = msg == null ? '' : String(msg);
@@ -138,11 +143,18 @@
 			// Keep polling after Ready/Error so cron re-runs surface Building again
 			// without requiring a full page refresh.
 			if (next === 'Ready') {
-				visible = true;
-				if (hideTimeout != null) clearTimeout(hideTimeout);
-				hideTimeout = setTimeout(() => {
+				// Celebrate Ready only on a live transition (e.g. Building → Ready).
+				// Do not show when opening the dashboard already Ready, nor on every poll.
+				const justBecameReady = prev != null && prev !== 'Ready';
+				if (justBecameReady) {
+					visible = true;
+					if (hideTimeout != null) clearTimeout(hideTimeout);
+					hideTimeout = setTimeout(() => {
+						visible = false;
+					}, READY_HIDE_MS);
+				} else {
 					visible = false;
-				}, READY_HIDE_MS);
+				}
 			} else {
 				if (hideTimeout != null) {
 					clearTimeout(hideTimeout);
