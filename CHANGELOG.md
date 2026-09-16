@@ -8,25 +8,23 @@ Releases use date-based versions: `YYYY.MM.dd`.
 
 ### Added
 
-- Friendly `GET /` response (`service: "SPAI API"`) instead of a bare 404.
-- Pipeline status edge-case hardening: Storage failures on `/pipeline/status` return Idle; banner guards missing `api_url` and keeps polling after Ready/Error.
-- UI Docker build uses `yarn.lock` when present.
-
-### Fixed
-
-- Bootstrap robustness: LazyObject Storage/Vars in the API; safe SSR fetches; scripts write `set_error` on early Storage failure.
-- Generic pipeline error messages for the UI banner.
+- Friendly `GET /` response (`service: "SPAI API"`, name: `water-quality`).
+- Pipeline status hardening: `/pipeline/status` never raises; banner guards missing `api_url` and keeps polling after Ready/Error (cron-friendly).
+- UI Docker build uses `yarn.lock` when present (`--frozen-lockfile` with install fallback).
+- `.env.example` with `VITE_ENV=PRO` only (no secrets).
 
 ### Changed
 
-- Ready status banner only appears on a live Building→Ready transition (not on every dashboard visit).
-- UI Docker images overwrite `.env` with `VITE_ENV=PRO` only (no MapTiler keys baked into images).
-- API error responses no longer leak internal exception strings (generic 503/400/404 messages).
+- Ready banner only appears on a live transition (e.g. Building → Ready), not on every dashboard visit or poll.
+- After Ready, transient API blips no longer escalate to Unreachable.
+- UI Docker images overwrite `.env` with `VITE_ENV=PRO` only (no MapTiler/API keys baked into images).
+- API error responses use generic messages (no `detail=str(e)` leaks); data endpoints return 503 when Storage/vars fail.
 
 ### Fixed
 
-- SSR bootstrap: landslide + EWS use safe fetches; renewable no longer treats `GET /` as images.
-- Banner does not escalate to Unreachable after a successful Ready status (transient API blips).
+- Bootstrap robustness: LazyObject Storage/Vars in the API; safe SSR where applicable; scripts write `set_error` even if Storage fails early.
+- Generic pipeline error messages for the UI banner (technical detail stays in logs).
+- SSR bootstrap uses `safeFetch` for images/analytics/aoi.
 
 ## [2026.09.15]
 
@@ -34,4 +32,4 @@ Releases use date-based versions: `YYYY.MM.dd`.
 
 - Docker images pinned via `image: …/:latest` in `spai.config.yaml` (Artifact Registry).
 - End-to-end pipeline status wiring: script registry → storage → `GET /pipeline/status` → UI banner.
-- UI Dockerfiles switched to yarn; `.env` with `VITE_ENV=PRO` copied into the image for HTTPS API URLs.
+- UI Dockerfiles switched to yarn; `VITE_ENV=PRO` for HTTPS API URLs in cloud.
