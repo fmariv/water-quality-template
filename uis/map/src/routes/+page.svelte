@@ -20,28 +20,20 @@
 	$: analyticsStore.set(analytics);
 
 	let layer = DEFAULT_BASEMAP;
-	let errorMessage = '';
 	let xyz_url = '';
 
-	$: sat_images = images
+	$: sat_images = (images || [])
 		.filter((image) => image.includes('sentinel-2-l2a'))
 		.map((image) => image.split('_')[1].split('.')[0])
 		.sort((a, b) => compareAsc(parseISO(a), parseISO(b)));
 
+	$: hasImages = sat_images.length > 0;
 	$: xyz_url = `${api_url}/images`;
 
-	// Check if there are no images available
-	$: if (sat_images.length === 0) {
-		errorMessage = 'No images or layers have been found.';
-	} else if (typeof analytics === 'object' && 'detail' in analytics) {
-		errorMessage = 'No water have been found.';
-	}
-
 	let currentImageLeft, currentImageRight;
-	$: if (!currentImageLeft) currentImageLeft = sat_images[0];
-	$: if (!currentImageRight) currentImageRight = sat_images[sat_images.length - 1];
+	$: if (!currentImageLeft && hasImages) currentImageLeft = sat_images[0];
+	$: if (!currentImageRight && hasImages) currentImageRight = sat_images[sat_images.length - 1];
 
-	// select image
 	function onChangeLeft(e) {
 		currentImageLeft = sat_images.find((i) => i == e.target.value);
 	}
@@ -50,74 +42,68 @@
 	}
 </script>
 
-{#if errorMessage}
-	<div
-		class="error-message"
-		style="color: red; font-weight: bold; padding: 10px; background: #ffe0e0;"
-	>
-		{errorMessage}
-	</div>
-{/if}
-<div class="w-screen h-screen flex flex-row gap-3 p-3">
-	<div class="relative flex flex-col flex-1 gap-3">
-		<PipelineStatusBanner {api_url} />
-		<Map
-			zoom={6}
-			panes={[
-				{ name: 'aoi', zIndex: 9999 },
-				{ name: 'left', zIndex: 999 },
-				{ name: 'right', zIndex: 999 }
-			]}
-			{aoi}
-		>
-			{#key layer}
-				<TileLayer url={BASEMAPS[layer]} options={BASEMAP_OPTIONS} />
-			{/key}
-			<LayersControl layers={BASEMAP_LAYERS} bind:layer />
-			{#if !errorMessage}
-				<DateSelector dates={sat_images} onChange={onChangeLeft} selected={currentImageLeft} />
-				<DateSelector
-					dates={sat_images}
-					onChange={onChangeRight}
-					position="right-2"
-					selected={currentImageRight}
-				/>
-				<ImageLayer
-					XYZ_URL={xyz_url}
-					name="sat"
-					image={'sentinel-2-l2a_' + currentImageLeft + '.tif'}
-					options={{
-						maxZoom: 20,
-						pane: 'left'
-					}}
-				/>
-				<ImageLayer
-					XYZ_URL={xyz_url}
-					name="sat"
-					image={'sentinel-2-l2a_' + currentImageLeft + '.tif'}
-					options={{
-						maxZoom: 20,
-						pane: 'left'
-					}}
-				/>
-				<ImageLayer
-					XYZ_URL={xyz_url}
-					name="sat"
-					image={'sentinel-2-l2a_' + currentImageRight + '.tif'}
-					options={{
-						maxZoom: 20,
-						pane: 'right'
-					}}
-				/>
-				<Slider />
+<div class="flex min-h-0 flex-1 flex-col">
+	<div class="flex min-h-0 flex-1 flex-row gap-3 p-3">
+		<div class="relative flex min-h-0 min-w-0 flex-1 flex-col gap-3">
+			<PipelineStatusBanner {api_url} />
+			<Map
+				zoom={6}
+				panes={[
+					{ name: 'aoi', zIndex: 9999 },
+					{ name: 'left', zIndex: 999 },
+					{ name: 'right', zIndex: 999 }
+				]}
+				{aoi}
+			>
+				{#key layer}
+					<TileLayer url={BASEMAPS[layer]} options={BASEMAP_OPTIONS} />
+				{/key}
+				<LayersControl layers={BASEMAP_LAYERS} bind:layer />
+				{#if hasImages}
+					<DateSelector dates={sat_images} onChange={onChangeLeft} selected={currentImageLeft} />
+					<DateSelector
+						dates={sat_images}
+						onChange={onChangeRight}
+						position="right-2"
+						selected={currentImageRight}
+					/>
+					<ImageLayer
+						XYZ_URL={xyz_url}
+						name="sat"
+						image={'sentinel-2-l2a_' + currentImageLeft + '.tif'}
+						options={{
+							maxZoom: 20,
+							pane: 'left'
+						}}
+					/>
+					<ImageLayer
+						XYZ_URL={xyz_url}
+						name="sat"
+						image={'sentinel-2-l2a_' + currentImageLeft + '.tif'}
+						options={{
+							maxZoom: 20,
+							pane: 'left'
+						}}
+					/>
+					<ImageLayer
+						XYZ_URL={xyz_url}
+						name="sat"
+						image={'sentinel-2-l2a_' + currentImageRight + '.tif'}
+						options={{
+							maxZoom: 20,
+							pane: 'right'
+						}}
+					/>
+					<Slider />
+				{/if}
+			</Map>
+			{#if $currentAnalytic !== '' && hasImages}
+				<div class="flex-shrink-0">
+					<Timeline height={200} />
+				</div>
 			{/if}
-		</Map>
-		{#if $currentAnalytic !== '' && !errorMessage}
-			<Timeline height={200} />
-		{/if}
-	</div>
-	<div class="w-[250px]">
-		{#if !errorMessage}
+		</div>
+		<div class="flex w-[250px] flex-shrink-0 flex-col overflow-y-auto">
 			<Analytics
 				{analytics}
 				{aoi}
@@ -126,6 +112,6 @@
 				{xyz_url}
 				{api_url}
 			/>
-		{/if}
+		</div>
 	</div>
 </div>

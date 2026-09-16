@@ -240,12 +240,12 @@
 	<WaterOpacity size="100%" />
 </button>
 
-{#if selected}
+{#if selected && options?.series}
 	<h3>{title}</h3>
 	<Pie {options} height={300} />
 {/if}
 
-{#if selected}
+{#if selected && left && date}
 	<ImageLayer
 		XYZ_URL={xyz_url}
 		name="vegetation"

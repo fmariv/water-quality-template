@@ -25,6 +25,9 @@ Releases use date-based versions: `YYYY.MM.dd`.
 - Bootstrap robustness: LazyObject Storage/Vars in the API; safe SSR where applicable; scripts write `set_error` even if Storage fails early.
 - Generic pipeline error messages for the UI banner (technical detail stays in logs).
 - SSR bootstrap uses `safeFetch` for images/analytics/aoi.
+- Removed the red “No images or layers have been found” banner while the pipeline is still preparing data; Analytics sidebar stays visible and layout no longer clips the right panel (`w-screen` → flex).
+- Water analytics pie/layers only render when dates and series are available (no broken requests during empty bootstrap).
+- UI Docker image rebuilt for `linux/amd64` (cloud-compatible) and published as `…-ui:latest`.
 
 ## [2026.09.15]
 
