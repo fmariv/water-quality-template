@@ -5,8 +5,7 @@ WORKDIR /app
 RUN apt-get update -y && \
     apt-get install -y --no-install-recommends \
         g++ \
-        libgdal-dev \
-        libexpat1 && \
+        libgdal-dev && \
     rm -rf /var/lib/apt/lists/*
 
 ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
@@ -15,7 +14,7 @@ ENV C_INCLUDE_PATH=/usr/include/gdal
 RUN uv venv
 
 COPY requirements.txt .
-RUN uv pip install --no-cache-dir -r requirements.txt
+RUN uv pip install -r requirements.txt
 
 COPY . .
 
